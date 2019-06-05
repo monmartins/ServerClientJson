@@ -1,16 +1,13 @@
 package Socket;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import Serializable.CJson;
 
@@ -25,7 +22,7 @@ public class CServer {
 			serverSocket = new ServerSocket(port);
 			objArray = cjson.deserialize("file.json");
 
-			count = objArray.length();
+			this.count = objArray.length();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -47,7 +44,6 @@ public class CServer {
 		try {
 			socket = serverSocket.accept();
 			System.out.println("Client connected");
-			sessionNext();
 
 			String msg="";
 			input = socket.getInputStream();
@@ -64,13 +60,12 @@ public class CServer {
 				}
 				if(msg.contains("END")) {
 					System.out.println(msg);
-//					sendServer(((new CJson()).serialize(new JSONObject())));
 					msg="";
 				}
 				if(msg.contains("OUT-SERVER")) {
 					endServerConnection();
 					msg="";
-					count=objArray.length();
+					this.count=objArray.length();
 					outWhile=true;
 				}
 			}
@@ -82,33 +77,49 @@ public class CServer {
 		
 	}
 	public void sessionNext() {
-		if(count>10) {
-			sendServer(String.valueOf(count));
-			count=count-10;
-			for(int i = 0 ;i<10;i++) {
-				sendServer((((new CJson()).serialize(objArray.getJSONObject(i)))));
-			}
+		if(this.count==0) {
+			sendServer("0");
 		}else {
-			sendServer(String.valueOf(count));
-			for(int i = 0 ;i<count;i++) {
-				sendServer((((new CJson()).serialize(objArray.getJSONObject(i)))));
+		if(this.count>10) {
+			sendServer(String.valueOf(10));
+			for(int i = objArray.length()-this.count ;i<(objArray.length()-this.count)+10;i++) {
+				System.out.println(i);
+				System.out.println(objArray.getJSONObject(i).toString());
+				sendServer(objArray.getJSONObject(i).toString()+"---|-|");
 			}
-			count=0;
+			this.count=count-10;
+		}else {
+			sendServer(String.valueOf(this.count));
+			for(int i = 0 ;i<this.count;i++) {
+				sendServer(objArray.getJSONObject(i).toString()+"---|-|");
+			}
+			this.count=0;
+		}
 		}
 	}
 	public void sessionPrevious() {
-		if(count>10) {
-			sendServer(String.valueOf(count));
-			count=count-10;
-			for(int i = 0 ;i<10;i++) {
-				sendServer((((new CJson()).serialize(objArray.getJSONObject(i)))));
-			}
+		if(this.count>=objArray.length()) {
+			sendServer("0");
 		}else {
-			sendServer(String.valueOf(count));
-			for(int i = 0 ;i<count;i++) {
-				sendServer((((new CJson()).serialize(objArray.getJSONObject(i)))));
+			if(this.count+10<objArray.length()) {
+				System.out.println(this.count);
+				System.out.println("....");
+				sendServer(String.valueOf(10));
+				for(int i = this.count+1 ;i<this.count+11 && (objArray.length()-i)>0;i++) {
+					sendServer(objArray.getJSONObject(objArray.length()-i).toString()+"---|-|");
+				}
+				this.count=this.count+10;
+			}else {
+				System.out.println(this.count);
+				System.out.println("...else...");
+				this.count=this.count+10;
+				sendServer(String.valueOf(this.count));
+				for(int i = this.count-objArray.length() ;i<objArray.length();i++) {
+					sendServer(objArray.getJSONObject(objArray.length()-i-1).toString()+"---|-|");
+				}
+				System.out.println(this.count);
+				this.count=objArray.length();
 			}
-			count=0;
 		}
 	}
 	
