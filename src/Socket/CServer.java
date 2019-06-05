@@ -59,7 +59,6 @@ public class CServer {
 					msg="";
 				}
 				if(msg.contains("END")) {
-					System.out.println(msg);
 					msg="";
 				}
 				if(msg.contains("OUT-SERVER")) {
@@ -83,8 +82,6 @@ public class CServer {
 		if(this.count>10) {
 			sendServer(String.valueOf(10));
 			for(int i = objArray.length()-this.count ;i<(objArray.length()-this.count)+10;i++) {
-				System.out.println(i);
-				System.out.println(objArray.getJSONObject(i).toString());
 				sendServer(objArray.getJSONObject(i).toString()+"---|-|");
 			}
 			this.count=count-10;
@@ -102,22 +99,17 @@ public class CServer {
 			sendServer("0");
 		}else {
 			if(this.count+10<objArray.length()) {
-				System.out.println(this.count);
-				System.out.println("....");
 				sendServer(String.valueOf(10));
 				for(int i = this.count+1 ;i<this.count+11 && (objArray.length()-i)>0;i++) {
 					sendServer(objArray.getJSONObject(objArray.length()-i).toString()+"---|-|");
 				}
 				this.count=this.count+10;
 			}else {
-				System.out.println(this.count);
-				System.out.println("...else...");
 				this.count=this.count+10;
-				sendServer(String.valueOf(this.count));
-				for(int i = this.count-objArray.length() ;i<objArray.length();i++) {
+				sendServer(String.valueOf(this.count-objArray.length()));
+				for(int i = objArray.length() - (this.count-objArray.length()) ;i<objArray.length();i++) {
 					sendServer(objArray.getJSONObject(objArray.length()-i-1).toString()+"---|-|");
 				}
-				System.out.println(this.count);
 				this.count=objArray.length();
 			}
 		}

@@ -1,5 +1,4 @@
 
-import Serializable.CJson;
 import Socket.CServer;
 
 public class Main {
@@ -9,9 +8,6 @@ public class Main {
 		server.startServer(5000);
 		while (true) {
 			server.receiveServer();
-		     
-		    // read data from the client
-		    // send data to the client
 		}
 	}
 
